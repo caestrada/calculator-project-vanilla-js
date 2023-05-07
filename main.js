@@ -9,67 +9,14 @@ for (let button of buttons) {
 }
 
 let screen = [];
-let leftOperand = null;
-let rightOperand = null;
 let operator = null;
+let prevOperand = '';
 
 const handleOnClick = (value) => {
     if (isNaN(value)) {
         handleSymbol(value);
-        // switch (value) {
-        //     case 'C':
-        //         screen = [];
-        //         leftOperand = null;
-        //         rightOperand = null;
-        //         break;
-
-        //     case '←':
-        //         screen.pop();
-        //         break;
-
-        //     case '×':
-        //         if (operator === null) {
-        //             leftOperand = Number.parseInt(screen.join(''));
-        //         }
-
-        //         operator = '×';
-        //         screen = [];
-        //         break;
-
-        //     case '-':
-        //         if (operator === null) {
-        //             leftOperand = Number.parseInt(screen.join(''));
-        //         }
-
-        //         operator = '-';
-        //         screen = [];
-        //         break;
-
-        //     case '-':
-        //         if (operator === null) {
-        //             leftOperand = Number.parseInt(screen.join(''));
-        //         }
-
-        //         operator = '-';
-        //         screen = [];
-        //         break;
-
-        //     case '=':
-        //         if (leftOperand === null) break;
-
-        //         rightOperand = Number.parseInt(screen.join(''));
-        //         calculate();
-        //         break;
-        
-        //     default:
-        //         break;
-        // }
     } else {
         handleNumber(value);
-        // // Do NOT append 0 to 0
-        // if (value === '0' && screen.length === 0) return;
-
-        // screen.push(value)
     }
 
     updateScreen();
@@ -79,11 +26,35 @@ const handleNumber = (number) => {
     if (number === '0' && screen.length === 0)
         return;
 
+    if (operator !== null &&  prevOperand === '') {
+        prevOperand = screen.join('')
+        screen = [];
+    }
+
     screen.push(number);
 }
 
 const handleSymbol = (symbol) => {
-    console.log('symbol', symbol);
+    switch (symbol) {
+        case 'C':
+            screen = [];
+            break;
+
+        case '←':
+            screen.pop();
+            break;
+            
+        case '×':
+        case '÷':
+        case '+':
+        case '-':
+            operator = symbol;
+            break;
+
+        case '=':
+            calculate();
+            break;
+    }
 }
 
 const updateScreen = () => {
@@ -97,26 +68,26 @@ const updateScreen = () => {
 }
 
 const calculate = () => {
+    console.log('calc operator', operator, prevOperand)
+
     if (operator === null) return;
-    if (operator === '×') {
-        screen = [leftOperand * rightOperand]
-        leftOperand = leftOperand * rightOperand
+
+    if (operator === '+') {
+        screen = [Number.parseInt(prevOperand) + Number.parseInt(screen.join(''))]
     }
 
     if (operator === '-') {
-        screen = [leftOperand - rightOperand]
-        leftOperand = leftOperand - rightOperand
+        screen = [Number.parseInt(prevOperand) - Number.parseInt(screen.join(''))]
     }
 
-    if (operator === '+') {
-        screen = [leftOperand + rightOperand]
-        leftOperand = leftOperand + rightOperand
+    if (operator === '×') {
+        screen = [Number.parseInt(prevOperand) * Number.parseInt(screen.join(''))]
     }
 
     if (operator === '÷') {
-        screen = [leftOperand / rightOperand]
-        leftOperand = leftOperand / rightOperand
+        screen = [Number.parseInt(prevOperand) / Number.parseInt(screen.join(''))]
     }
 
-
+    prevOperand = ''
+    operator = null;
 }
